@@ -1,47 +1,49 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+    import { Spinner, Container } from "@sveltestrap/sveltestrap";
+    import PocketBase from "pocketbase";
+
+    const pb = new PocketBase("http://10.32.6.48:8090");
+
+    async function authenticate(mail: string, password: string) {
+        const authData = await pb.admins.authWithPassword(mail, password);
+        if (pb.authStore.isValid) {
+            console.log("Authenticated successfully.");
+        } else {
+            console.error("Authentication failed.");
+        }
+    }
+
+    async function getCustomers() {
+        await authenticate("s20a3c@umwelt-campus.de", "code-a-thon2024");
+        return await pb.collection("customers").getFullList({
+            sort: "-created",
+        });
+    }
+
+    let customersPromise = getCustomers();
 </script>
 
+<svelte:head>
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+</svelte:head>
+
 <main>
-  <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+    <Container class="pt-3">
+        {#await customersPromise}
+            <Spinner />
+        {:then customers}
+            {customers}
+        {:catch error}
+            {error}
+        {/await}
+        <button on:click={() => (customersPromise = getCustomers())}>
+            load
+        </button>
+    </Container>
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
 </style>
