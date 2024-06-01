@@ -20,19 +20,10 @@ function parseXlsx(path) {
         data: XLSX.utils.sheet_to_json(workbook.Sheets[sheetName])
     }))
 }
-/**
- * 
- * @param {string} str 
- * @returns {string} ID
- */
+
 function createID(str) {
     if (String(str).length > 15) throw new Error("Max ID size is 15");
     return '0'.repeat(15 - String(str).length) + String(str).replace(".", "_");
-}
-
-function destroyID(ID) {
-    if (ID.length !== 15) throw new Error("ID size must be exactly 15 characters");
-    return ID.replace(/^0+/, '');
 }
 
 function excelDateToJSDate(excelDate) {
@@ -48,8 +39,15 @@ async function importData(path) {
     const costumers = sheet[1].data;
     const users = sheet[2].data;
     const assets = sheet[3].data;
-    const contracts = sheet[4].data;
-    /*for (const c of costumers) {
+    const contracts = sheet[4].data.slice(0, -1);
+    const contract_events = sheet[5].data;
+    const invoices = sheet[6].data;
+    const sustainability = sheet[7].data;
+    const popUpMsg = sheet[8].data;
+    const msgContent = sheet[9].data;
+    const postBox = sheet[10].data;
+
+    for (const c of costumers) {
         const address = await pb.collection('addresses').create({
             "streetname": c['Straße'],
             "postalcode": c['Plz'],
@@ -118,7 +116,7 @@ async function importData(path) {
             "subtenant": a["Untermieter"].trim() == "ja" ? true : false
         });
     }
-    console.log('Step 3: Assets imported successfully.');*/
+    console.log('Step 3: Assets imported successfully.');
     for (const v of contracts) {
         console.log(v)
         const record = await pb.collection('contracts').create({
@@ -135,6 +133,66 @@ async function importData(path) {
             "asset": createID(v['Asset'])
         });
     }
+    console.log('Step 4: Contracts imported successfully.');
+    for (const ve of contract_events) {
+        const record = await pb.collection('contract_events').create({
+            "id": createID(ve['Event ID']),
+            "contract": createID(ve['Vertrag']),
+            "event": ve['Ereignis'],
+            "date": excelDateToJSDate(ve['Ereignisdatum'])
+        });
+    }
+    console.log('Step 5: Contract events imported successfully.');
+    for (const i of invoices) {
+        const record = await pb.collection('invoices').create({
+            "id": createID(i['Rechnungsnummer']),
+            "date": excelDateToJSDate(i['Rechnungsdatum']),
+            "amount": i['Betrag'],
+            "contract": createID(i['Vertrag']),
+            "paid": i['Status'] == 'beglichen' ? true : false
+        });
+    }
+    console.log('Step 6: Invoices imported successfully.');
+    for (const sus of sustainability) {
+        console.log(sus)
+        const record = await pb.collection('sustainability_data').create({
+            "asset": createID(sus['Asset']),
+            "query_date": excelDateToJSDate(sus['Abfragedatum (Stand)']),
+            "date_of_entry": excelDateToJSDate(sus['Erfassungsdatum']),
+            "energy_use": sus['Stromverbrauch in kWh'],
+            "gas_use": sus['Gasverbrauch in kWh']
+        });
+    }
+    console.log('Step 7: Sustainability data imported successfully.');
+    for (const pc of msgContent) {
+        const record = await pb.collection('interaction_messages').create({
+            "id": createID(pc['Anzeigetext Nummer']),
+            "content": pc['Text']
+        });
+    }
+    console.log('Step 8: Message Content data imported successfully.');
+    for (const msg of popUpMsg) {
+        const record = await pb.collection('pop_up_messages').create({
+            "user": createID(msg['Empfänger Nutzer']),
+            "display_date": excelDateToJSDate(msg['Anzeigedatum']),
+            "interaction": "none",
+            "message": createID(msg['Anzeigetext Nummer'])
+        });
+    }
+    console.log('Step 9: Pop Up Messages imported successfully.');
+    for (const pob of postBox) {
+        const record = await pb.collection('postbox_messages').create({
+            "user": createID(pob['Nutzer']),
+            "sender_is_dal": pob['Richtung'] == "DAL an Kunde" ? true : false,
+            "date": excelDateToJSDate(pob['Datum']),
+            "content": pob['Text'],
+            "contract": pob['Vertrag'] !== undefined ? createID(pob['Vertrag']) : null,
+            "asset": pob['Asset'] !== undefined ? createID(pob['Asset']) : null,
+            "invoice": pob['Rechnung'] !== undefined ? createID(pob['Rechnung']) : null
+        });
+    }
+    console.log('Step 10: Postbox imported successfully.');
+    console.log('\bImport Completed')
 }
 
 try {
