@@ -1,6 +1,7 @@
 <script lang="ts">
     import { Container } from "@sveltestrap/sveltestrap";
-    import DalEmployeeView from "../components/DALEmployeeView.svelte";
+    import Navigation from "../components/Navigation.svelte";
+    import DALEmpolyeeView from "../components/DALEmployeeView.svelte"
 </script>
 
 <svelte:head>
@@ -14,6 +15,11 @@
     />
 </svelte:head>
 
-<Container class="pt-5">
-    <DalEmployeeView id={"ua6pfcqf53phimk"}/>
+<Navigation />
+<Container>
+    <DALEmpolyeeView id={"ua6pfcqf53phimk"} />
 </Container>
+
+<style>
+    @import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
+</style>
