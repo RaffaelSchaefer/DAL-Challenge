@@ -41,7 +41,7 @@
 
                     if (response.length > 0) {
                         const dla_user = response[0];
-                        const dla_userid = dla_user.id;
+                        const dla_userid = dla_user.isUser;
 
                         pb.authStore.clear();
                         await pb.collection('users').authWithPassword(email, password);
