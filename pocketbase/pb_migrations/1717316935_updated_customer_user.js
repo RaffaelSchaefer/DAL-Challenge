@@ -1,0 +1,20 @@
+/// <reference path="../pb_data/types.d.ts" />
+migrate((db) => {
+  const dao = new Dao(db)
+  const collection = dao.findCollectionByNameOrId("5mqq8y6f0fsbxjo")
+
+  collection.listRule = ""
+  collection.viewRule = ""
+  collection.createRule = "isUser = @request.auth.id || @collection.dla_user.isUser = @request.auth.id"
+
+  return dao.saveCollection(collection)
+}, (db) => {
+  const dao = new Dao(db)
+  const collection = dao.findCollectionByNameOrId("5mqq8y6f0fsbxjo")
+
+  collection.listRule = "isUser = @request.auth.id || @collection.dla_user.isUser = @request.auth.id"
+  collection.viewRule = "isUser = @request.auth.id || @collection.dla_user.isUser = @request.auth.id"
+  collection.createRule = null
+
+  return dao.saveCollection(collection)
+})

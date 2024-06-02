@@ -37,10 +37,7 @@
                 <NavLink href="/">Postfach</NavLink>
             </NavItem>
             <NavItem>
-                <NavLink href="/">Verträge</NavLink>
-            </NavItem>
-            <NavItem>
-                <NavLink href="/">Assets</NavLink>
+                <NavLink href="/contracts">Verträge</NavLink>
             </NavItem>
             <Button outline color="light" size="md" href="/logout">Abmelden</Button>
         </Nav>
