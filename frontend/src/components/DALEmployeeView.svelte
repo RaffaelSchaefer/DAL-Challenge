@@ -28,10 +28,12 @@
     function open() {
         isOpen = true;
     }
+
+    console.log(employee.user);
 </script>
 
 {#if isOpen}
-    <Toast {isOpen}>
+    <Toast class="z-3" {isOpen}>
         <ToastHeader {toggle}
             >{#if employee?.user}{employee?.user?.first_name}
                 {employee?.user?.last_name}{:else}Ihr Ansprechpartner{/if}</ToastHeader
@@ -73,7 +75,7 @@
                 <hr class="mt-1" />
                 <div class="spread">
                     <ButtonGroup>
-                        <Button color="danger" outline
+                        <Button color="danger" outline href={`mailto:${employee?.user?.email}`}
                             ><Icon name="envelope" /> E-Mail</Button
                         >
                         <Button color="danger"

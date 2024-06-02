@@ -15,6 +15,11 @@
     } from "@sveltestrap/sveltestrap";
     import DALEmployeeView from "../../components/DALEmployeeView.svelte";
 
+    function getRandomHouseURL() {
+        const random = Math.floor(Math.random() * 4) + 1;
+        return `../../house_${random}.webp`;
+    }
+
     export let data;
 </script>
 
@@ -35,7 +40,8 @@
                     <Row>
                         <Col class="pb-2" style="display: flex; align-content: start" lg>
                             <img
-                                src="https://via.placeholder.com/150"
+                                src={getRandomHouseURL()}
+                                style="height: 150px;"
                                 alt="Placeholder"
                             />
                             <p>

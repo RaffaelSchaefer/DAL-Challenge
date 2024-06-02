@@ -29,6 +29,12 @@
     function getPDFURL(invoice: any) {
         return `http://10.32.6.48:8090/api/files/invoices/${invoice.id}/${invoice.file}`;
     }
+
+    function getRandomHouseURL() {
+        const random = Math.floor(Math.random() * 4) + 1;
+        return `../../house_${random}.webp`;
+    }
+
 </script>
 
 <Navigation />
@@ -127,7 +133,8 @@
                             <Col style="display: flex; align-content: start" lg>
                                 <img
                                     class="p-2"
-                                    src="https://via.placeholder.com/150"
+                                    src={getRandomHouseURL()}
+                                    style="height: 150px;"
                                     alt="Placeholder"
                                 />
                                 <p>
@@ -150,7 +157,6 @@
                                 <Button
                                     color="danger"
                                     style="height: 100%; width: 100%"
-                                    href="https://youtu.be/dQw4w9WgXcQ?si=Oh7EVM0bJ6v91m9q"
                                     >Mehr Informationen <Icon
                                         name="arrow-right-circle"
                                     /></Button
