@@ -1,0 +1,87 @@
+<style>
+    /* CSS-Stile bleiben unverändert */
+    .container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 10px;
+    }
+    .container > div {
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+    .img-container {
+      grid-column: 1 / span 1;
+    }
+    .data-asset {
+      grid-column: 2 / span 1;
+    }
+    .data-customer {
+      grid-column: 3 / span 2;
+    }
+    .img-container img {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+
+  <script>
+    // Skript-Teil
+    const pb = new PocketBase('http://10.32.6.48:8090');
+
+    async function fetchData() {
+      try {
+        // Authentifizierung
+        const authData = await pb.admins.authWithPassword('s20a3c@umwelt-campus.de', 'code-a-thon2024');
+        
+        // Daten abrufen
+        const assetData = await pb.query('assets').find();
+        const contractData = await pb.query('contracts').include('asset').include('customer').find();
+
+        // Durchlaufe alle Assets
+        assetData.forEach(asset => {
+          // Suche den Vertrag, der zum aktuellen Asset gehört
+          const relatedContract = contractData.find(contract => contract.asset.id === asset.id);
+
+          // Wenn ein entsprechender Vertrag gefunden wurde, füge die Daten in das HTML ein
+          if (relatedContract) {
+            // Daten zum Asset in HTML einfügen
+            document.getElementById('asset-data').insertAdjacentHTML('beforeend', `
+              <div>
+                <h2>Daten zum Asset</h2>
+                <p>Name: ${asset.name}</p>
+                <p>Beschreibung: ${asset.description}</p>
+                <!-- Weitere Daten zum Asset hier einfügen -->
+              </div>
+            `);
+
+            // Daten zum Kunden in HTML einfügen
+            document.getElementById('customer-data').insertAdjacentHTML('beforeend', `
+              <div>
+                <h2>Daten zum Kunden</h2>
+                <p>Name: ${relatedContract.customer.name}</p>
+                <p>Email: ${relatedContract.customer.email}</p>
+                <!-- Weitere Daten zum Kunden hier einfügen -->
+              </div>
+            `);
+          }
+        });
+      } catch (error) {
+        console.error('Fehler beim Abrufen der Daten:', error);
+      }
+    }
+
+    // Daten beim Laden der Seite abrufen
+    fetchData();
+  </script>
+
+<div class="container">
+    <div class="img-container">
+      <img src="../static/haus.jpg" alt="Hausbild">
+    </div>
+    <div class="data-asset" id="asset-data">
+      <!-- Hier werden die Daten zum Asset eingefügt -->
+    </div>
+    <div class="data-customer" id="customer-data">
+      <!-- Hier werden die Daten zum Kunden eingefügt -->
+    </div>
+  </div>
