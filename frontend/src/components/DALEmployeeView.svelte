@@ -14,7 +14,7 @@
     } from "@sveltestrap/sveltestrap";
 
     function getAvatarURL(employee: DLAUser) {
-        return `http://10.32.6.48:8090/api/files/_pb_users_auth_/${employee.user?.id}/${employee.user?.avatar}?token=`;
+        return `http://127.0.0.1:8090/api/files/_pb_users_auth_/${employee.user?.id}/${employee.user?.avatar}?token=`;
     }
 
     export let employee: DLAUser;
@@ -28,8 +28,6 @@
     function open() {
         isOpen = true;
     }
-
-    console.log(employee.user);
 </script>
 
 {#if isOpen}
