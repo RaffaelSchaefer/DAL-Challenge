@@ -4,6 +4,7 @@ import type DLAUser from '../../interfaces/dla_user.js';
 export const load = async ({ locals }) => {
     const userArr = await locals.pb.collection("customer_user").getList(1, 50, {
         expand: "works_for, isUser",
+        //@ts-ignore
         filter: locals.pb.filter("isUser ~ {:id}", { id: locals.user.id }),
     });
     const user = userArr.items[0];
